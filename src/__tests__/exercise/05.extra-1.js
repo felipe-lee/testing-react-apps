@@ -23,7 +23,6 @@ afterAll(() => server.close())
 
 test(`logging in displays the user's username`, async () => {
   render(<Login />)
-
   const {username, password} = buildLoginForm()
 
   userEvent.type(screen.getByLabelText(/username/i), username)
@@ -34,32 +33,4 @@ test(`logging in displays the user's username`, async () => {
   await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
 
   expect(screen.getByText(username)).toBeInTheDocument()
-})
-
-test(`displays an error message if no username is given`, async () => {
-  render(<Login />)
-
-  const {password} = buildLoginForm()
-
-  userEvent.type(screen.getByLabelText(/password/i), password)
-
-  userEvent.click(screen.getByRole('button', {name: /submit/i}))
-
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
-
-  expect(screen.getByRole('alert')).toHaveTextContent('username required')
-})
-
-test(`displays an error message if no password is given`, async () => {
-  render(<Login />)
-
-  const {username} = buildLoginForm()
-
-  userEvent.type(screen.getByLabelText(/username/i), username)
-
-  userEvent.click(screen.getByRole('button', {name: /submit/i}))
-
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
-
-  expect(screen.getByRole('alert')).toHaveTextContent('password required')
 })
