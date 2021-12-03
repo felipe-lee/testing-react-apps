@@ -5,8 +5,8 @@ import * as React from 'react'
 import {render, screen, waitForElementToBeRemoved} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {build, fake} from '@jackfranklin/test-data-bot'
+import {rest} from 'msw'
 import {setupServer} from 'msw/node'
-import {handlers} from 'test/server-handlers'
 import Login from '../../components/login-submission'
 
 const buildLoginForm = build({
@@ -16,7 +16,14 @@ const buildLoginForm = build({
   },
 })
 
-const server = setupServer(...handlers)
+const server = setupServer(
+  rest.post(
+    'https://auth-provider.example.com/api/login',
+    async (req, res, ctx) => (
+      res(ctx.json({username: req.body.username}))
+    ),
+  )
+)
 
 beforeAll(() => server.listen())
 afterAll(() => server.close())
