@@ -22,23 +22,11 @@ test('counter increments and decrements when the buttons are clicked', () => {
 
   expect(message.textContent).toBe('Current count: 0')
 
-  const incrementClickEvent = new MouseEvent('click', {
-    bubbles: true,
-    cancelable: true,
-    button: 0,
-  })
-
-  increment.dispatchEvent(incrementClickEvent)
+  increment.click()
 
   expect(message.textContent).toBe('Current count: 1')
 
-  const decrementClickEvent = new MouseEvent('click', {
-    bubbles: true,
-    cancelable: true,
-    button: 0,
-  })
-
-  decrement.dispatchEvent(decrementClickEvent)
+  decrement.click()
 
   expect(message.textContent).toBe('Current count: 0')
 })
