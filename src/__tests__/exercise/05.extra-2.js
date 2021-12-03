@@ -31,7 +31,7 @@ test(`logging in displays the user's username`, async () => {
 
   userEvent.click(screen.getByRole('button', {name: /submit/i}))
 
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
 
   expect(screen.getByText(username)).toBeInTheDocument()
 })
@@ -45,11 +45,9 @@ test(`displays an error message if no username is given`, async () => {
 
   userEvent.click(screen.getByRole('button', {name: /submit/i}))
 
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
 
-  expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
-    `"username required"`,
-  )
+  expect(screen.getByRole('alert')).toHaveTextContent('username required')
 })
 
 test(`displays an error message if no password is given`, async () => {
@@ -61,9 +59,7 @@ test(`displays an error message if no password is given`, async () => {
 
   userEvent.click(screen.getByRole('button', {name: /submit/i}))
 
-  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i))
+  await waitForElementToBeRemoved(() => screen.getByLabelText(/loading/i) )
 
-  expect(screen.getByRole('alert').textContent).toMatchInlineSnapshot(
-    `"password required"`,
-  )
+  expect(screen.getByRole('alert')).toHaveTextContent('password required')
 })
