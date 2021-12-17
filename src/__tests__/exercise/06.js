@@ -66,10 +66,8 @@ test('displays error when it fails to get the location', async () => {
     (successCallback, errorCallback) => {
       promise
         .then(() => successCallback())
-        .catch((err) => {
-          console.log("Error with promise!")
-          console.log(err)
-          errorCallback(err)
+        .catch(() => {
+          errorCallback(new Error(errorMessage))
         })
     },
   )
@@ -79,13 +77,7 @@ test('displays error when it fails to get the location', async () => {
   expect(screen.getByLabelText(/loading/i)).toBeInTheDocument()
 
   await act (async () => {
-    reject(errorMessage)
-
-    try {
-      await promise
-    } catch (err) {
-
-    }
+    reject()
   })
 
   expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
