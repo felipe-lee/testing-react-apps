@@ -56,31 +56,3 @@ test('displays the users current location', async () => {
 
   expect(screen.getByText(/longitude/i)).toHaveTextContent(`Longitude: ${fakePosition.coords.longitude}`)
 })
-
-test('displays error when it fails to get the location', async () => {
-  const errorMessage = 'Cannot find your location'
-
-  const {promise, reject} = deferred()
-
-  window.navigator.geolocation.getCurrentPosition.mockImplementation(
-    (successCallback, errorCallback) => {
-      promise
-        .then(() => successCallback())
-        .catch(() => {
-          errorCallback(new Error(errorMessage))
-        })
-    },
-  )
-
-  render(<Location />)
-
-  expect(screen.getByLabelText(/loading/i)).toBeInTheDocument()
-
-  await act (async () => {
-    reject()
-  })
-
-  expect(screen.queryByLabelText(/loading/i)).not.toBeInTheDocument()
-
-  expect(screen.getByRole('alert')).toHaveTextContent(errorMessage)
-})
