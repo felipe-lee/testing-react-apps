@@ -7,23 +7,15 @@ import * as React from 'react'
 import useCounter from '../../components/use-counter'
 
 
-const setUp = ({initialProps} = {}) => {
-  const result = {}
-
-  const TestComponent = () => {
-    Object.assign(result, useCounter(initialProps))
+test('exposes the count and increment/decrement functions', () => {
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
 
     return null
   }
 
   render(<TestComponent />)
-
-  return result
-}
-
-
-test('exposes the count and increment/decrement functions', () => {
-  const result = setUp()
 
   expect(result.count).toBe(0)
 
@@ -48,7 +40,14 @@ test('exposes the count and increment/decrement functions', () => {
 test('can set an initial count other than 0', () => {
   const initialCount = faker.datatype.number({min: 1})
 
-  const result = setUp({initialProps: {initialCount}})
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
+
+    return null
+  }
+
+  render(<TestComponent initialCount={initialCount} />)
 
   expect(result.count).toBe(initialCount)
 })
@@ -56,7 +55,14 @@ test('can set an initial count other than 0', () => {
 test('can set a different step count', () => {
   const step = faker.datatype.number({min: 2})
 
-  const result = setUp({initialProps: {step}})
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
+
+    return null
+  }
+
+  render(<TestComponent step={step}/>)
 
   let expectedCount = 0
 
