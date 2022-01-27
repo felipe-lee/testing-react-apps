@@ -1,90 +1,114 @@
 // testing custom hooks
 // http://localhost:3000/counter-hook
 
-import {act, render} from '@testing-library/react'
+import {act, renderHook} from '@testing-library/react-hooks'
 import faker from 'faker'
-import * as React from 'react'
 import useCounter from '../../components/use-counter'
 
 
-const setUp = ({initialProps} = {}) => {
-  const result = {}
-
-  const TestComponent = () => {
-    Object.assign(result, useCounter(initialProps))
-
-    return null
-  }
-
-  render(<TestComponent />)
-
-  return result
-}
-
-
 test('exposes the count and increment/decrement functions', () => {
-  const result = setUp()
+  const { result } = renderHook(() => useCounter())
 
-  expect(result.count).toBe(0)
+  expect(result.current.count).toBe(0)
 
-  act(() => result.increment())
+  act(() => result.current.increment())
 
-  expect(result.count).toBe(1)
+  expect(result.current.count).toBe(1)
 
-  act(() => result.increment())
+  act(() => result.current.increment())
 
-  expect(result.count).toBe(2)
+  expect(result.current.count).toBe(2)
 
-  act(() => result.decrement())
+  act(() => result.current.decrement())
 
-  expect(result.count).toBe(1)
+  expect(result.current.count).toBe(1)
 
-  act(() => result.decrement())
-  act(() => result.decrement())
+  act(() => result.current.decrement())
+  act(() => result.current.decrement())
 
-  expect(result.count).toBe(-1)
+  expect(result.current.count).toBe(-1)
 })
 
 test('can set an initial count other than 0', () => {
   const initialCount = faker.datatype.number({min: 1})
 
-  const result = setUp({initialProps: {initialCount}})
+  const {result} = renderHook(() => useCounter({initialCount}))
 
-  expect(result.count).toBe(initialCount)
+  expect(result.current.count).toBe(initialCount)
 })
 
 test('can set a different step count', () => {
   const step = faker.datatype.number({min: 2})
 
-  const result = setUp({initialProps: {step}})
+  const {result} = renderHook(() => useCounter({step}))
 
   let expectedCount = 0
 
-  expect(result.count).toBe(expectedCount)
+  expect(result.current.count).toBe(expectedCount)
 
-  act(() => result.increment())
-
-  expectedCount += step
-
-  expect(result.count).toBe(expectedCount)
-
-  act(() => result.increment())
+  act(() => result.current.increment())
 
   expectedCount += step
 
-  expect(result.count).toBe(expectedCount)
+  expect(result.current.count).toBe(expectedCount)
 
-  act(() => result.decrement())
+  act(() => result.current.increment())
+
+  expectedCount += step
+
+  expect(result.current.count).toBe(expectedCount)
+
+  act(() => result.current.decrement())
 
   expectedCount -= step
 
-  expect(result.count).toBe(expectedCount)
+  expect(result.current.count).toBe(expectedCount)
 
-  act(() => result.decrement())
+  act(() => result.current.decrement())
   expectedCount -= step
 
-  act(() => result.decrement())
+  act(() => result.current.decrement())
   expectedCount -= step
 
-  expect(result.count).toBe(expectedCount)
+  expect(result.current.count).toBe(expectedCount)
+})
+
+test('the step can be changed', () => {
+  const step = faker.datatype.number({min: 2})
+
+  const {result, rerender} = renderHook(useCounter, {initialProps: {step}})
+
+  let expectedCount = 0
+
+  expect(result.current.count).toBe(expectedCount)
+
+  act(() => result.current.increment())
+
+  expectedCount += step
+
+  expect(result.current.count).toBe(expectedCount)
+
+  act(() => result.current.increment())
+
+  expectedCount += step
+
+  expect(result.current.count).toBe(expectedCount)
+
+  act(() => result.current.decrement())
+
+  expectedCount -= step
+
+  expect(result.current.count).toBe(expectedCount)
+
+  const newStep = faker.datatype.number({min: 2})
+
+  rerender({step: newStep})
+
+  act(() => result.current.decrement())
+  expectedCount -= newStep
+
+  act(() => result.current.decrement())
+  expectedCount -= newStep
+
+  expect(result.current.count).toBe(expectedCount)
 })
