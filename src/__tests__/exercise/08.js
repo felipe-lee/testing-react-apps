@@ -1,99 +1,96 @@
 // testing custom hooks
 // http://localhost:3000/counter-hook
 
-import {render, screen} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {act, render} from '@testing-library/react'
 import faker from 'faker'
 import * as React from 'react'
 import useCounter from '../../components/use-counter'
 
-const MyCounter = ({initialCount = 0, step = 1} = {}) => {
-  const {count, increment, decrement} = useCounter({initialCount, step})
-
-  return (
-    <>
-      <div>Current count: {count}</div>
-      <button onClick={increment}>Increase Count</button>
-      <button onClick={decrement}>Decrease Count</button>
-    </>
-  )
-}
 
 test('exposes the count and increment/decrement functions', () => {
-  render(<MyCounter />)
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
 
-  const message = screen.getByText(/current count/i)
-  const increaseButton = screen.getByRole('button', {name: /increase count/i})
-  const decreaseButton = screen.getByRole('button', {name: /decrease count/i})
+    return null
+  }
 
-  expect(message).toHaveTextContent('Current count: 0')
+  render(<TestComponent />)
 
+  expect(result.count).toBe(0)
 
-  userEvent.click(increaseButton)
+  act(() => result.increment())
 
-  expect(message).toHaveTextContent('Current count: 1')
+  expect(result.count).toBe(1)
 
-  userEvent.click(increaseButton)
+  act(() => result.increment())
 
-  expect(message).toHaveTextContent('Current count: 2')
+  expect(result.count).toBe(2)
 
+  act(() => result.decrement())
 
-  userEvent.click(decreaseButton)
+  expect(result.count).toBe(1)
 
-  expect(message).toHaveTextContent('Current count: 1')
+  act(() => result.decrement())
+  act(() => result.decrement())
 
-  userEvent.click(decreaseButton)
-  userEvent.click(decreaseButton)
-
-  expect(message).toHaveTextContent('Current count: -1')
+  expect(result.count).toBe(-1)
 })
 
 test('can set an initial count other than 0', () => {
-  const initialCount = faker.datatype.number()
+  const initialCount = faker.datatype.number({min: 1})
 
-  render(<MyCounter initialCount={initialCount} />)
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
 
-  const message = screen.getByText(/current count/i)
+    return null
+  }
 
-  expect(message).toHaveTextContent(`Current count: ${initialCount}`)
+  render(<TestComponent initialCount={initialCount} />)
+
+  expect(result.count).toBe(initialCount)
 })
 
 test('can set a different step count', () => {
   const step = faker.datatype.number({min: 2})
 
-  render(<MyCounter step={step}/>)
+  let result
+  const TestComponent = (props) => {
+    result = useCounter(props)
 
-  const message = screen.getByText(/current count/i)
-  const increaseButton = screen.getByRole('button', {name: /increase count/i})
-  const decreaseButton = screen.getByRole('button', {name: /decrease count/i})
+    return null
+  }
+
+  render(<TestComponent step={step}/>)
 
   let expectedCount = 0
 
-  expect(message).toHaveTextContent(`Current count: ${expectedCount}`)
+  expect(result.count).toBe(expectedCount)
 
-  userEvent.click(increaseButton)
-
-  expectedCount += step
-
-  expect(message).toHaveTextContent(`Current count: ${expectedCount}`)
-
-  userEvent.click(increaseButton)
+  act(() => result.increment())
 
   expectedCount += step
 
-  expect(message).toHaveTextContent(`Current count: ${expectedCount}`)
+  expect(result.count).toBe(expectedCount)
 
-  userEvent.click(decreaseButton)
+  act(() => result.increment())
+
+  expectedCount += step
+
+  expect(result.count).toBe(expectedCount)
+
+  act(() => result.decrement())
 
   expectedCount -= step
 
-  expect(message).toHaveTextContent(`Current count: ${expectedCount}`)
+  expect(result.count).toBe(expectedCount)
 
-  userEvent.click(decreaseButton)
+  act(() => result.decrement())
   expectedCount -= step
 
-  userEvent.click(decreaseButton)
+  act(() => result.decrement())
   expectedCount -= step
 
-  expect(message).toHaveTextContent(`Current count: ${expectedCount}`)
+  expect(result.count).toBe(expectedCount)
 })
